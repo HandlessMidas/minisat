@@ -26,6 +26,7 @@ OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWA
 #include "minisat/utils/Options.h"
 #include "minisat/core/Dimacs.h"
 #include "minisat/simp/SimpSolver.h"
+#include "minisat/core/Bench.h"
 
 using namespace Minisat;
 
@@ -66,6 +67,7 @@ int main(int argc, char** argv)
         IntOption    cpu_lim("MAIN", "cpu-lim","Limit on CPU time allowed in seconds.\n", 0, IntRange(0, INT32_MAX));
         IntOption    mem_lim("MAIN", "mem-lim","Limit on memory usage in megabytes.\n", 0, IntRange(0, INT32_MAX));
         BoolOption   strictp("MAIN", "strict", "Validate DIMACS header during parsing.", false);
+        BoolOption   circuit("MAIN", "circuit","Enable circuitSat solver with BENCH format.", false);
 
         parseOptions(argc, argv, true);
         
@@ -96,7 +98,11 @@ int main(int argc, char** argv)
             printf("============================[ Problem Statistics ]=============================\n");
             printf("|                                                                             |\n"); }
         
-        parse_DIMACS(in, S, (bool)strictp);
+        if ((bool)circuit) {
+            parse_BENCH(in, S);
+        } else {
+            parse_DIMACS(in, S, (bool)strictp);
+        }
         gzclose(in);
         FILE* res = (argc >= 3) ? fopen(argv[2], "wb") : NULL;
 
